@@ -1,38 +1,40 @@
 import React from "react";
-import {Searchbar} from "../components/Searchbar";
+import { Searchbar } from "../components/Searchbar";
 import { Card, CardLists } from "../components/Cards";
 import { Link } from "react-router-dom";
 import { FaPlus } from "react-icons/fa6";
 import { useAuth } from "../context/UseAuth";
+import house1 from "../images/house1.jpg";
+import house2 from "../images/house2.jpg";
 
 const Home = () => {
-  const {user} = useAuth()
+  const { user } = useAuth();
 
-  const userName = user.user_metadata?.username || "user"
+  const userName = user.user_metadata?.username || "user";
   const items = [
     {
-      imgsrc: "../src/images/house1.jpg",
+      imgsrc: house1,
       price: "$500,000",
       title: "Modern Apartment",
-      description: "Beautiful modern apartment in the heart of the city."
+      description: "Beautiful modern apartment in the heart of the city.",
     },
     {
-      imgsrc: "../src/images/house2.jpg",
+      imgsrc: house2,
       price: "$500,000",
       title: "Modern Apartment",
-      description: "Beautiful modern apartment in the heart of the city."
+      description: "Beautiful modern apartment in the heart of the city.",
     },
     {
-      imgsrc: "../src/images/house2.jpg",
+      imgsrc: house2,
       price: "$500,000",
       title: "Modern Apartment",
-      description: "Beautiful modern apartment in the heart of the city."
+      description: "Beautiful modern apartment in the heart of the city.",
     },
     {
-      imgsrc: "../src/images/house2.jpg",
+      imgsrc: house2,
       price: "$500,000",
       title: "Modern Apartment",
-      description: "Beautiful modern apartment in the heart of the city."
+      description: "Beautiful modern apartment in the heart of the city.",
     },
   ];
 
@@ -49,15 +51,15 @@ const Home = () => {
         </h2>
         <div className="w-full flex gap-4 p-2 overflow-x-auto scrollbar-hide">
           {items.map((item, index) => (
-          <div key={index} className="shrink-0 w-72">
-            <Card
-              imgsrc={item.imgsrc}
-              price={item.price}
-              title={item.title}
-              description={item.description}
-            />
-          </div>
-        ))}
+            <div key={index} className="shrink-0 w-72">
+              <Card
+                imgsrc={item.imgsrc}
+                price={item.price}
+                title={item.title}
+                description={item.description}
+              />
+            </div>
+          ))}
         </div>
       </section>
       <section className="w-full p-2">
@@ -66,18 +68,21 @@ const Home = () => {
         </h2>
         <div className="h-auto w-full">
           {items.map((item, index) => (
-          <CardLists
-            key={index}
-            imgsrc={item.imgsrc}
-            price={item.price}
-            title={item.title}
-            description={item.description}
-          />
-        ))}
+            <CardLists
+              key={index}
+              imgsrc={item.imgsrc}
+              price={item.price}
+              title={item.title}
+              description={item.description}
+            />
+          ))}
         </div>
       </section>
       {user.user_metadata?.role === "agent" && (
-        <Link to={"/add"} className="fixed bottom-20 right-7 text-3xl z-10 bg-blue-500 text-white p-2 rounded-full">
+        <Link
+          to={"/add"}
+          className="fixed bottom-20 right-7 text-3xl z-10 bg-blue-500 text-white p-2 rounded-full"
+        >
           <FaPlus />
         </Link>
       )}

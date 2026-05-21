@@ -32,7 +32,7 @@ return (
           <div className="w-full max-w-sm bg-white/90 backdrop-blur-md rounded-xl p-6 shadow-md mx-auto">
             <p className="text-gray-800 text-base sm:text-lg mb-4 text-center">Welcome to Zilo Home <br /> Find your next place.</p>
             <button
-              className="rounded-2xl bg-blue-900 cursor-pointer p-3 text-white text-lg w-full"
+              className="rounded-2xl bg-blue-500 cursor-pointer p-3 text-white text-lg w-full"
               onClick={() => navigate('/signup')}
             >
               Let's get started

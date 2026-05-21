@@ -1,7 +1,9 @@
 import toast from "react-hot-toast";
 import { FaHeart } from "react-icons/fa6";
+import brandPlaceholder from "../assets/brand.png";
+import house1 from "../images/house1.jpg";
 
-export const Card = ({ imgsrc, price, title, description }) => {
+export const Card = ({ imgsrc, price, title, description, status }) => {
   return (
     <div
       onClick={() => {
@@ -11,23 +13,31 @@ export const Card = ({ imgsrc, price, title, description }) => {
     >
       <div className="w-full h-[60%] flex justify-center items-center p-2 pb-0">
         <img
-          src={imgsrc}
+          src={imgsrc || brandPlaceholder}
           alt={title}
+          onError={(e) => {
+            e.currentTarget.src = brandPlaceholder;
+          }}
           className="w-full h-full object-cover rounded-2xl"
         />
       </div>
       <div className="w-full px-2 pt-0 flex flex-col justify-start items-start bg-white">
         <p className="text-lg text-gray-600 font-semibold">{title}</p>
-        <p className="text-sm text-gray-500 italic capitalize">
+        <p className="text-sm text-gray-500 italic capitalize line-clamp-1">
           {description}
         </p>
-        <p className="font-bold text-xl text-blue-500">{price}</p>
+        <p className="font-bold text-xl text-blue-500">{price} Fcfa</p>
+      </div>
+      <div>
+        <span className="absolute top-5 left-5 bg-blue-400 text-white p-1.5 px-4 rounded-lg">
+          {status}
+        </span>
       </div>
     </div>
   );
 };
 
-export const CardLists = () => {
+export const CardLists = ({ title, imgsrc, price, location }) => {
   return (
     <div
       onClick={() => {
@@ -37,17 +47,18 @@ export const CardLists = () => {
     >
       <div className="h-full w-30">
         <img
-          src="../src/images/house1.jpg"
+          src={imgsrc || brandPlaceholder}
           alt="House"
+          onError={(e) => {
+            e.currentTarget.src = brandPlaceholder;
+          }}
           className="w-full h-full object-cover rounded-2xl"
         />
       </div>
       <div className="flex flex-col justify-center flex-1 overflow-hidden items-start-safe">
-        <p className=" text-gray-600 font-semibold">Modern Apartment</p>
-        <p className="text-sm text-gray-500 italic capitalize">
-          cabs junction , Bambili
-        </p>
-        <p className="font-bold text-xl text-blue-500">500,000 fcfa</p>
+        <p className=" text-gray-600 font-semibold">{title}</p>
+        <p className="text-sm text-gray-500 italic capitalize">{location}</p>
+        <p className="font-bold text-xl text-blue-500">{price}</p>
       </div>
     </div>
   );
@@ -58,7 +69,7 @@ export const CardProps = () => {
     <div className="relative w-full h-90 rounded-lg flex flex-col bg-white">
       <div className="w-full h-[70%] flex justify-center items-center p-2 pb-0">
         <img
-          src="../src/images/house1.jpg"
+          src={house1}
           alt="House"
           className="w-full h-full object-cover rounded-2xl"
         />
@@ -73,7 +84,7 @@ export const CardProps = () => {
           cabs junction , Bambili
         </p>
       </div>
-      <div className = "absolute top-5 right-5">
+      <div className="absolute top-5 right-5">
         <button className="bg-blue-500 text-white p-2 rounded-full">
           <FaHeart className="size-5" />
         </button>
@@ -84,5 +95,5 @@ export const CardProps = () => {
         </span>
       </div>
     </div>
-  ); 
+  );
 };

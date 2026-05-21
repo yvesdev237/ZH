@@ -169,10 +169,10 @@ const SignUp = () => {
             >
               an Agent
             </button>
-          </div>
+          </div> 
         </div>
         <button
-          className="p-2 w-50 capitalize rounded bg-blue-900 text-white text-lg"
+          className="p-2 w-50 capitalize rounded bg-blue-500 text-white text-lg"
           onClick={signUp}
         >
           {isLoading ? "Loading..." : "sign up"}
