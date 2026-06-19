@@ -45,8 +45,8 @@ const SignIn = () => {
     }
   };
   return (
-    <main className="relative -screen w-full flex flex-col gap-3 items-start p-4 justify-center">
-      <h2 className="text-4xl text-blue-800 text-center font-bold font-sans capitalize w-full">
+    <main className="relative h-screen w-full flex flex-col gap-3 items-start p-4 justify-center">
+      <h2 className="text-4xl text-blue-500 text-center font-bold font-sans capitalize w-full">
         welcome back !
       </h2>
       <p className="text-lg text-gray-500 italic font-medium text-center">
@@ -60,7 +60,7 @@ const SignIn = () => {
           <input
             type="email"
             id="email"
-            placeholder="email@gmail.com"
+            placeholder="zilohome@gmail.com"
             className="w-full outline outline-gray-500 rounded p-2"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
@@ -92,14 +92,14 @@ const SignIn = () => {
           </div>
         </div>
         <button
-          className="p-2 w-50 capitalize rounded bg-blue-900 text-white text-lg"
+          className="p-2 w-50 capitalize rounded bg-blue-500 text-white text-lg"
           onClick={signIn}
         >
           {isLoading ? "Loading..." : "sign in"}
         </button>
       </div>
       <div className="text-lg text-center font-medium w-full absolute bottom-10">
-            Don't have an account ? <Link to={'/signup'} replace = {true} className="text-blue-800 capitalize font-medium">sign up</Link>
+            Don't have an account ? <Link to={'/signup'} replace = {true} className="text-blue-500 capitalize font-medium">sign up</Link>
           </div>
     </main>
   );

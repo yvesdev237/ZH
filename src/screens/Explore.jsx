@@ -1,26 +1,71 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { SearchbarProps } from "../components/Searchbar";
 import toast from "react-hot-toast";
 import { Card } from "../components/Cards";
 import { db } from "../services/database";
 import brandPlaceholder from "../assets/brand.png";
 
+const normalizeImageUrl = (url) => {
+  if (!url || typeof url !== "string") return null;
+  if (url.startsWith("http")) return url;
+
+  const { data } = db.storage.from("listing-images").getPublicUrl(url);
+  return data?.publicUrl || null;
+};
+
 const Explore = () => {
+  const navigate = useNavigate();
   const [listings, setListings] = useState([]);
 
   const fetchListings = async () => {
     const { data, error } = await db
-      .from("listings")
-      .select(`*,images:listings_images(image_url , listings_id)`)
+      .from("property")
+      .select("*")
       .order("created_at", { ascending: false });
 
     if (error) {
-      console.error(error); 
-      return ;
+      console.error(error);
+      return [];
     }
 
-    console.log("Explore fetched listings:", data);
-    return data || [];
+    const listings = data || [];
+    const propertyIds = listings.map((listing) => listing.id);
+
+    console.log("Explore fetched listings:", listings);
+    console.log("Explore property IDs to load images for:", propertyIds);
+
+    if (propertyIds.length > 0) {
+      const { data: imageRows, error: imageError } = await db
+        .from("property_images")
+        .select("storage_key,prop_id")
+        .in("prop_id", propertyIds)
+        .order("id", { ascending: true });
+
+      if (imageError) {
+        console.error("Explore property_images lookup failed:", imageError);
+      } else {
+        console.log("Explore property_images rows:", imageRows);
+        const imagesByPropId = (imageRows || []).reduce((acc, row) => {
+          acc[row.prop_id] = acc[row.prop_id] || [];
+          acc[row.prop_id].push(row.storage_key);
+          return acc;
+        }, {});
+
+        return listings.map((listing) => {
+          const firstImage = imagesByPropId[listing.id]?.[0];
+          return {
+            ...listing,
+            firstImageUrl: normalizeImageUrl(firstImage),
+          };
+        });
+      }
+    }
+
+    return listings.map((listing) => ({
+      ...listing,
+      firstImageUrl: null,
+    }));
   };
   useEffect(() => {
     const loadingListings = async () => {
@@ -71,11 +116,13 @@ const Explore = () => {
         >
           {listings.length === 0
             ? "There's nothing to show now "
-            : listings.map((listing, index) => (
+            : listings.map((listing) => (
                 <Card
                   key={listing.id}
+                  onClick={() => navigate(`/dashboard/property/${listing.id}`)}
                   imgsrc={
-                    listing.images?.[0]?.image_url || brandPlaceholder
+                    listing.firstImageUrl ||
+                    brandPlaceholder
                   }
                   price={listing.price}
                   title={listing.title}

@@ -78,21 +78,26 @@ const AddProp = () => {
 
   //UPLOAD IMAGES
   const uploadImages = async () => {
+    console.log("AddProp: starting image upload for", images.length, "images");
     const uploadPromises = images.map(async (image) => {
       const fileName = `${Date.now()}-${image.name}`;
+      console.log("AddProp: uploading", fileName);
       const { error } = await db.storage
         .from("listing-images")
         .upload(fileName, image);
       if (error) {
+        console.error("AddProp: upload error for", fileName, error);
         toast.error(`Failed to upload ${image.name}`);
         return null;
       }
-      const { data } = db.storage.from("listing-images").getPublicUrl(fileName);
-      return data.publicUrl;
+      // Return storage key instead of public URL
+      console.log("AddProp: uploaded", fileName, "to storage bucket");
+      return fileName;
     });
 
     const results = await Promise.all(uploadPromises);
-    return results.filter((url) => url !== null);
+    console.log("AddProp: all uploads complete, results:", results);
+    return results.filter((key) => key !== null);
   };
 
   //IMAGE SUBMISSION LOGIC
@@ -118,7 +123,7 @@ const AddProp = () => {
       setUploading(true);
       //listing creation logic
       const { data: listingsData, error: listingsError } = await db
-        .from("listings")
+        .from("property")
         .insert([
           {
             title,
@@ -140,21 +145,29 @@ const AddProp = () => {
 
       //upload images and get URLs
       const imageUrls = await uploadImages();
+      console.log("AddProp: uploaded image URLs:", imageUrls);
 
       //save images
       if (imageUrls.length > 0) {
-        const imageRecords = imageUrls.map((url) => ({
-          listings_id: listingId,
-          image_url: url,
+        const imageRecords = imageUrls.map((key, idx) => ({
+          prop_id: listingId,
+          storage_key: key,
+          filename: key ? key.replace(/^[0-9-]+-/, "") : null,
+          ordering: idx,
         }));
+        console.log("AddProp: inserting image records:", imageRecords);
         const { error: imagesError } = await db
-          .from("listings_images")
+          .from("property_images")
           .insert(imageRecords);
         if (imagesError) {
-          console.error("Error saving image URLs:", imagesError);
+          console.error("Error saving image records:", imagesError);
+          toast.error(`Failed to save images: ${imagesError.message}`);
         } else {
           toast.success("Property listed successfully!");
         }
+      } else {
+        console.warn("AddProp: no image URLs returned from upload");
+        toast.warning("Property listed but no images were uploaded.");
       }
     } catch (submittingError) {
       console.error("Submission error", submittingError);

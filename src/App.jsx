@@ -10,16 +10,23 @@ import Explore from "./screens/Explore";
 import AddProp from "./screens/AddProp";
 import Favorite from "./screens/Favorite";
 import Profile from "./screens/Profile";
+import PropertyDetails from "./screens/PropertyDetails";
+import PrivacyPolicy from "./screens/PrivacyPolicy";
+import FAQ from "./screens/FAQ";
 import { SecureRoute } from "./utils/SecureRouting";
+import Auth from "./authPages/Auth";
 
 const App = () => {
   return (
     <main className="w-full min-h-screen flex justify-center">
       <Routes>
         <Route element={<LandingPage />} path="/" />
+        <Route element={<Auth />} path="/auth" />
         <Route element={<SignIn />} path="/signin" />
         <Route element={<SignUp />} path="/signup" />
         <Route element={<ResetPass />} path="/reset" />
+        <Route element={<PrivacyPolicy />} path="/privacy" />
+        <Route element={<FAQ />} path="/faq" />
         <Route element={<AddProp />} path="/add" />
         <Route element={<SecureRoute />}>
           <Route element={<Dashboard />} path="/dashboard">
@@ -27,6 +34,7 @@ const App = () => {
             <Route element={<Explore />} path="explore" />
             <Route element={<Favorite />} path="favorite" />
             <Route element={<Profile />} path="profiles" />
+            <Route element={<PropertyDetails />} path="property/:listingId" />
           </Route>
         </Route>
       </Routes>

@@ -3,13 +3,25 @@ import { FaHeart } from "react-icons/fa6";
 import brandPlaceholder from "../assets/brand.png";
 import house1 from "../images/house1.jpg";
 
-export const Card = ({ imgsrc, price, title, description, status }) => {
+export const Card = ({
+  imgsrc,
+  price,
+  title,
+  description,
+  status,
+  onClick,
+}) => {
+  const handleClick = () => {
+    if (onClick) {
+      return onClick();
+    }
+    toast.error("not yet available");
+  };
+
   return (
     <div
-      onClick={() => {
-        toast.error("not yet available");
-      }}
-      className="relative w-full h-54 rounded-lg flex flex-col bg-white"
+      onClick={handleClick}
+      className={`relative w-full h-54 rounded-lg flex flex-col bg-white ${onClick ? "cursor-pointer hover:shadow-lg transition-shadow" : ""}`}
     >
       <div className="w-full h-[60%] flex justify-center items-center p-2 pb-0">
         <img
@@ -65,11 +77,12 @@ export const CardLists = ({ title, imgsrc, price, location }) => {
 };
 
 export const CardProps = () => {
+  const imgsource = 'https://xdgqmeffrevanejkvljy.supabase.co/storage/v1/object/public/listing-images/1781657332159-unnamed.jpg'
   return (
-    <div className="relative w-full h-90 rounded-lg flex flex-col bg-white">
+    <div className="relative w-full h-90 rounded-lg flex flex-col bg-white ">
       <div className="w-full h-[70%] flex justify-center items-center p-2 pb-0">
         <img
-          src={house1}
+          src={imgsource}
           alt="House"
           className="w-full h-full object-cover rounded-2xl"
         />

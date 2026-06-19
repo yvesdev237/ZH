@@ -64,7 +64,7 @@ const Profile = () => {
             </div>
             <div className="w-full p-2 bg-gray-200 rounded-lg flex flex-col justify-around items-center">
               <span>5</span>
-              <p className="text-sm text-gray-500">Saved</p>
+              <p className="text-sm text-gray-500">Available</p>
             </div>
             <div className="w-full p-2 bg-gray-200 rounded-lg flex flex-col justify-around items-center">
               <span>3</span>

@@ -1,10 +1,17 @@
-import { NavLink } from "react-router-dom";
+import { NavLink, useLocation } from "react-router-dom";
 import { useAuth } from "../context/UseAuth";
 import { permissionCheck } from "../utils/PermissionCheck";
 import { FaHouse, FaCompass, FaHeart, FaUser } from "react-icons/fa6";
 
 export const Navbar = () => {
+  const location = useLocation();
   const { user, role } = useAuth();
+  const hideNavbar = location.pathname.startsWith("/dashboard/property/");
+
+  if (hideNavbar) {
+    return null;
+  }
+
   const navItems = [
     {
       label: "Home",
@@ -44,9 +51,11 @@ export const Navbar = () => {
             <NavLink
               key={item.path}
               to={item.path}
-              className={({ isActive }) => `flex flex-col justify-center items-center capitalize transition-all ease-in gap-1 rounded-4xl ${isActive ? " text-blue-500 -translate-y-1.5 " : "text-gray-500"}`}
+              className={({ isActive }) =>
+                `flex flex-col justify-center items-center capitalize transition-all ease-in gap-1 rounded-4xl ${isActive ? " text-blue-500 -translate-y-1.5 " : "text-gray-500"}`
+              }
             >
-              <Icon size={20}/>
+              <Icon size={20} />
               {item.label}
             </NavLink>
           );

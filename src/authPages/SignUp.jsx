@@ -1,8 +1,9 @@
 import React, { useState } from "react";
 import { db } from "../services/database";
 import { FaEye, FaEyeSlash } from "react-icons/fa6";
-import { Link , Navigate } from "react-router-dom";
+import { Link, Navigate } from "react-router-dom";
 import { useAuth } from "../context/UseAuth";
+import toast from "react-hot-toast";
 
 const SignUp = () => {
   //states
@@ -15,43 +16,47 @@ const SignUp = () => {
   const [show, setShow] = useState(false);
   const [showConfirmPass, setShowconfirmPass] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const {user} = useAuth();
+  const { user } = useAuth();
 
-  if(user && user.user_metadata?.role) {
-      return <Navigate to="/dashboard/home" replace={true} />;
-    }
+  if (user && user.user_metadata?.role) {
+    return <Navigate to="/dashboard/home" replace={true} />;
+  }
 
   //functions
   const signUp = async () => {
     const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
     //error validation
     if (typeof email !== "string" || !emailRegex.test(email) || !email) {
-      alert("Invalid Email !");
+      toast.error("Invalid Email !");
       return;
     }
     if (!password) {
-      alert("No password provided");
+      toast.error("No password provided");
       return;
     }
     if (!name) {
-      alert("seems like you don't have a name");
+      toast.error("seems like you don't have a name");
       return;
     }
     if (password !== confirmPassword) {
-      alert("Passwords are different!");
+      toast.error("Passwords are different!");
       return;
     }
     setIsLoading(true);
     try {
-      const {data, error } = await db.auth.signUp({ email, password , options : { data : { username: name.toLowerCase().trim(), phone, role } } });
+      const { data, error } = await db.auth.signUp({
+        email,
+        password,
+        options: { data: { username: name.toLowerCase().trim(), phone, role } },
+      });
 
       if (error) {
-        alert("Failed to sign up", error);
+        toast.error("Failed to sign up", error);
         console.error("sign up error :", error);
         return;
       }
 
-      alert("Successfully signed up !");
+      toast.success("Successfully signed up !");
       console.log(data);
     } catch (err) {
       console.log(err);
@@ -60,14 +65,16 @@ const SignUp = () => {
     }
   };
   return (
-    <main className="relative -screen w-full flex flex-col gap-3 items-start p-4 justify-center">
-      <h2 className="text-3xl text-blue-800 text-center font-bold font-sans capitalize w-full">
-        create your account
-      </h2>
-      <p className="text-lg text-gray-500 italic font-medium text-center">
-        Join us today to access available propreties near you!
-      </p>
-      <div className="flex flex-col justify-center items-start gap-4 w-full ">
+    <main className="relative h-screen w-full flex lg:flex-row flex-col gap-3 items-start p-4 justify-center">
+      <div className="lg:h-screen flex flex-col justify-center items-center">
+        <h2 className="text-3xl lg:text-4xl text-blue-500 text-center font-bold font-sans capitalize w-full">
+          create your account
+        </h2>
+        <p className="text-lg text-gray-500 italic font-medium text-center">
+          Join us today to access available propreties near you!
+        </p>
+      </div>
+      <div className="flex flex-col justify-center items-start gap-4 w-full lg:border-2 lg:border-blue-100 lg:shadow-2xl lg:rounded-2xl lg:max-h-screen lg:w-[60%] p-2">
         <div className="flex flex-col gap-2 justify-center items-start w-full ">
           <label htmlFor="name" className="capitalize font-semibold">
             Name
@@ -88,7 +95,7 @@ const SignUp = () => {
           <input
             type="email"
             id="email"
-            placeholder="email@gmail.com"
+            placeholder="zilohome@gmail.com"
             className="w-full outline outline-gray-500 rounded p-2"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
@@ -102,7 +109,7 @@ const SignUp = () => {
             <input
               type="tel"
               id="phone"
-              placeholder="+237 699959447"
+              placeholder="+237699959447"
               className="w-full outline outline-gray-500 rounded p-2"
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
@@ -169,20 +176,20 @@ const SignUp = () => {
             >
               an Agent
             </button>
-          </div> 
+          </div>
         </div>
         <button
-          className="p-2 w-50 capitalize rounded bg-blue-500 text-white text-lg"
+          className="p-2 w-50 lg:w-full capitalize rounded bg-blue-500 text-white text-lg"
           onClick={signUp}
         >
           {isLoading ? "Loading..." : "sign up"}
         </button>
-      </div>
-      <div className="text-lg text-center font-medium w-full absolute bottom-1">
-        Have an account ?{" "}
-        <Link to={"/signin"} className="text-blue-800 capitalize font-medium">
-          sign in
-        </Link>
+        <div className="text-lg text-center font-medium w-full absolute bottom-1">
+          Have an account ?{" "}
+          <Link to={"/signin"} className="text-blue-500 capitalize font-medium">
+            sign in
+          </Link>
+        </div>
       </div>
     </main>
   );
