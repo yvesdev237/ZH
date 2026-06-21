@@ -19,8 +19,30 @@ const Home = () => {
   const navigate = useNavigate();
   const [properties, setProperties] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [featured, setFeatured] = useState([]);
 
   const userName = user.user_metadata?.username || "user";
+
+  useEffect(() => {
+    const loadFeatured = async () => {
+      try {
+        const { data: featuredData, error: featuredError } = await db
+          .from("property")
+          .select("*")
+          .eq("is_featured", true)
+          .order("created_at", { ascending: false })
+          .limit(4);
+
+        if (featuredError) throw featuredError;
+
+        setFeatured(featuredData);
+      } catch (error) {
+        console.error("Home: fetch featured properties failed", error);
+      }
+    };
+
+    loadFeatured();
+  }, []);
 
   useEffect(() => {
     const fetchProperties = async () => {
@@ -72,6 +94,7 @@ const Home = () => {
   }, []);
 
   const items = properties;
+  const featuredItems = featured;
 
   if (loading) {
     return (
@@ -90,13 +113,13 @@ const Home = () => {
       <Searchbar />
       <section className="w-full mt-5">
         <h2 className="text-xl text-gray-500 capitalize text-left w-full p-2 font-medium">
-          Featured Properties ({items.length})
+          Featured Properties 
         </h2>
-        {items.length === 0 ? (
+        {featuredItems.length === 0 ? (
           <p className="p-2 text-slate-500">No properties available yet.</p>
         ) : (
           <div className="w-full flex gap-4 p-2 overflow-x-auto scrollbar-hide">
-            {items.slice(0, 4).map((item) => (
+            {featuredItems.map((item) => (
               <div
                 key={item.id}
                 className="shrink-0 w-72 cursor-pointer"
@@ -107,6 +130,7 @@ const Home = () => {
                   price={item.price ? `FCFA ${item.price}` : "Price not set"}
                   title={item.title}
                   description={item.description}
+                  status={item.status}
                 />
               </div>
             ))}
@@ -129,7 +153,8 @@ const Home = () => {
               >
                 <CardLists
                   imgsrc={item.imgsrc}
-                  price={item.price ? `FCFA ${item.price}` : "Price not set"}
+                  price={item.price ? `${item.price} FCFA` : "Price not set"}
+                  location={item.location || item.address || "Unknown location"}
                   title={item.title}
                   description={item.description}
                 />

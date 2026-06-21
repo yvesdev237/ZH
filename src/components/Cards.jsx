@@ -4,26 +4,35 @@ import brandPlaceholder from "../assets/brand.png";
 import house1 from "../images/house1.jpg";
 
 export const Card = ({
+  id,
   imgsrc,
   price,
   title,
   description,
   status,
   onClick,
+  isFavorite = false,
+  onToggleFavorite,
 }) => {
   const handleClick = () => {
     if (onClick) {
       return onClick();
     }
-    toast.error("not yet available");
+  };
+
+  const handleFavoriteClick = (e) => {
+    e.stopPropagation();
+    if (onToggleFavorite) {
+      onToggleFavorite(id);
+    }
   };
 
   return (
     <div
       onClick={handleClick}
-      className={`relative w-full h-54 rounded-lg flex flex-col bg-white ${onClick ? "cursor-pointer hover:shadow-lg transition-shadow" : ""}`}
+      className={`relative w-full h-60 rounded-lg flex flex-col bg-white ${onClick ? "cursor-pointer hover:shadow-lg transition-shadow" : ""}`}
     >
-      <div className="w-full h-[60%] flex justify-center items-center p-2 pb-0">
+      <div className="w-full h-[70%] flex justify-center items-center p-2 pb-0">
         <img
           src={imgsrc || brandPlaceholder}
           alt={title}
@@ -45,39 +54,58 @@ export const Card = ({
           {status}
         </span>
       </div>
+      <button
+        type="button"
+        onClick={handleFavoriteClick}
+        className="absolute top-5 right-5 bg-white rounded-full p-2 shadow hover:shadow-lg transition"
+      >
+        {isFavorite ? (
+          <FaHeart className="size-5 text-red-500" />
+        ) : (
+          <FaHeart className="size-5 text-slate-300" />
+        )}
+      </button>
     </div>
   );
 };
 
-export const CardLists = ({ title, imgsrc, price, location }) => {
+export const CardLists = ({ title, imgsrc, price, location, onClick }) => {
+  const handleClick = () => {
+    if (onClick) {
+      return onClick();
+    }
+    toast.error("not yet available");
+  };
+
   return (
     <div
-      onClick={() => {
-        toast.error("not yet available");
-      }}
-      className=" ring-gray-600 flex h-25 p-2 justify-center items-center gap-2 overflow-hidden rounded-2xl"
+      onClick={handleClick}
+      className="ring-gray-600 flex h-28 p-3 justify-start items-center gap-3 overflow-hidden rounded-2xl bg-white shadow-sm cursor-pointer hover:shadow-md transition"
     >
-      <div className="h-full w-30">
+      <div className="h-24 w-24 flex-shrink-0 overflow-hidden rounded-2xl">
         <img
           src={imgsrc || brandPlaceholder}
-          alt="House"
+          alt={title || "House"}
           onError={(e) => {
             e.currentTarget.src = brandPlaceholder;
           }}
-          className="w-full h-full object-cover rounded-2xl"
+          className="w-full h-full object-cover"
         />
       </div>
-      <div className="flex flex-col justify-center flex-1 overflow-hidden items-start-safe">
-        <p className=" text-gray-600 font-semibold">{title}</p>
-        <p className="text-sm text-gray-500 italic capitalize">{location}</p>
-        <p className="font-bold text-xl text-blue-500">{price}</p>
+      <div className="flex flex-col justify-center flex-1 overflow-hidden">
+        <p className="text-gray-600 font-semibold truncate">{title}</p>
+        <p className="text-sm text-gray-500 italic capitalize truncate">
+          {location || "Unknown location"}
+        </p>
+        <p className="font-bold text-lg text-blue-500 truncate">{price}</p>
       </div>
     </div>
   );
 };
 
 export const CardProps = () => {
-  const imgsource = 'https://xdgqmeffrevanejkvljy.supabase.co/storage/v1/object/public/listing-images/1781657332159-unnamed.jpg'
+  const imgsource =
+    "https://xdgqmeffrevanejkvljy.supabase.co/storage/v1/object/public/listing-images/1781657332159-unnamed.jpg";
   return (
     <div className="relative w-full h-90 rounded-lg flex flex-col bg-white ">
       <div className="w-full h-[70%] flex justify-center items-center p-2 pb-0">

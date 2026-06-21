@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { SearchbarProps } from "../components/Searchbar";
-import toast from "react-hot-toast";
+import { Searchbar } from "../components/Searchbar";
 import { Card } from "../components/Cards";
 import { db } from "../services/database";
+import { useAuth } from "../context/UseAuth";
 import brandPlaceholder from "../assets/brand.png";
 
 const normalizeImageUrl = (url) => {
@@ -17,12 +17,25 @@ const normalizeImageUrl = (url) => {
 const Explore = () => {
   const navigate = useNavigate();
   const [listings, setListings] = useState([]);
+  const { favorites, toggleFavorite } = useAuth();
 
-  const fetchListings = async () => {
-    const { data, error } = await db
-      .from("property")
-      .select("*")
-      .order("created_at", { ascending: false });
+  const fetchListings = async (searchTerm = "", statusFilter = "") => {
+    const query = db.from("property").select("*");
+
+    if (searchTerm.trim()) {
+      const filter = `%${searchTerm.trim()}%`;
+      query.or(
+        `title.ilike.${filter},location.ilike.${filter},description.ilike.${filter}`,
+      );
+    }
+
+    if (statusFilter) {
+      query.eq("status", statusFilter);
+    }
+
+    query.order("created_at", { ascending: false });
+
+    const { data, error } = await query;
 
     if (error) {
       console.error(error);
@@ -31,9 +44,6 @@ const Explore = () => {
 
     const listings = data || [];
     const propertyIds = listings.map((listing) => listing.id);
-
-    console.log("Explore fetched listings:", listings);
-    console.log("Explore property IDs to load images for:", propertyIds);
 
     if (propertyIds.length > 0) {
       const { data: imageRows, error: imageError } = await db
@@ -45,7 +55,6 @@ const Explore = () => {
       if (imageError) {
         console.error("Explore property_images lookup failed:", imageError);
       } else {
-        console.log("Explore property_images rows:", imageRows);
         const imagesByPropId = (imageRows || []).reduce((acc, row) => {
           acc[row.prop_id] = acc[row.prop_id] || [];
           acc[row.prop_id].push(row.storage_key);
@@ -67,6 +76,7 @@ const Explore = () => {
       firstImageUrl: null,
     }));
   };
+
   useEffect(() => {
     const loadingListings = async () => {
       const data = await fetchListings();
@@ -74,42 +84,53 @@ const Explore = () => {
     };
     loadingListings();
   }, []);
+
+  const [searchTerm, setSearchTerm] = useState("");
+  const [statusFilter, setStatusFilter] = useState("");
+
+  const handleFilter = async (status) => {
+    const nextStatus = statusFilter === status ? "" : status;
+    setStatusFilter(nextStatus);
+    const data = await fetchListings(searchTerm, nextStatus);
+    setListings(data);
+  };
+
+  const handleSearch = async (term) => {
+    setSearchTerm(term);
+    const data = await fetchListings(term, statusFilter);
+    setListings(data);
+  };
+
   return (
     <main className="min-h-screen w-full p-2 flex flex-col pb-20">
       <h1 className="text-2xl text-gray-500 capitalize text-left w-full p-2 font-medium">
         discover <br />
         <span className="text-blue-500">properties</span>
       </h1>
-      <SearchbarProps />
+      <Searchbar onSearch={handleSearch} />
       <div className="w-full flex gap-2 items-start justify-start p-4">
         <button
-          className="rounded-2xl bg-blue-400 p-1.5 w-20 text-white"
-          onClick={() => {
-            toast.error("coming soon...");
-          }}
+          className={`rounded-2xl p-1.5 w-20 text-white ${statusFilter === "" ? "bg-blue-600" : "bg-blue-400"}`}
+          onClick={() => handleFilter("")}
         >
           All
         </button>
         <button
-          className="rounded-2xl bg-blue-400 p-1.5 w-20 text-white"
-          onClick={() => {
-            toast.error("coming soon...");
-          }}
+          className={`rounded-2xl p-1.5 w-20 text-white ${statusFilter === "sale" ? "bg-blue-600" : "bg-blue-400"}`}
+          onClick={() => handleFilter("sale")}
         >
           For Sale
         </button>
         <button
-          className="rounded-2xl bg-blue-400 p-1.5 w-20 text-white"
-          onClick={() => {
-            toast.error("coming soon...");
-          }}
+          className={`rounded-2xl p-1.5 w-20 text-white ${statusFilter === "rent" ? "bg-blue-600" : "bg-blue-400"}`}
+          onClick={() => handleFilter("rent")}
         >
           For Rent
         </button>
       </div>
       <section className="w-full p-1 flex-1 flex flex-col">
         <h2 className="text-xl text-gray-500 capitalize text-left w-full p-2 font-medium">
-          listed Properties ({listings.length})
+          Discover Properties
         </h2>
         <div
           className={`w-full h-full flex items-start overflow-y-auto flex-col gap-5 p-2 ${listings.length === 0 && "justify-center"}`}
@@ -119,15 +140,15 @@ const Explore = () => {
             : listings.map((listing) => (
                 <Card
                   key={listing.id}
+                  id={listing.id}
                   onClick={() => navigate(`/dashboard/property/${listing.id}`)}
-                  imgsrc={
-                    listing.firstImageUrl ||
-                    brandPlaceholder
-                  }
+                  imgsrc={listing.firstImageUrl || brandPlaceholder}
                   price={listing.price}
                   title={listing.title}
                   description={listing.description}
                   status={listing.status}
+                  isFavorite={favorites.includes(listing.id)}
+                  onToggleFavorite={toggleFavorite}
                 />
               ))}
         </div>

@@ -1,7 +1,9 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const PrivacyPolicy = () => {
+  const navigate = useNavigate();
+
   return (
     <div className="min-h-screen bg-slate-950 text-white px-4 py-8 sm:px-6 lg:px-8">
       <div className="mx-auto w-full max-w-4xl rounded-3xl bg-slate-900/90 border border-slate-700 p-8 shadow-2xl">
@@ -59,18 +61,18 @@ const PrivacyPolicy = () => {
         </section>
 
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-          <Link
-            to="/faq"
+          <button
+            onClick={() => navigate("/faq")}
             className="inline-block rounded-2xl bg-blue-500 px-5 py-3 text-sm font-semibold text-white text-center transition hover:bg-blue-600"
           >
             View FAQ
-          </Link>
-          <Link
-            to="/"
+          </button>
+          <button
+            onClick={() => navigate(-1)}
             className="inline-block rounded-2xl border border-slate-600 px-5 py-3 text-sm font-semibold text-slate-200 text-center transition hover:border-slate-400"
           >
-            Back to Home
-          </Link>
+            Go Back
+          </button>
         </div>
       </div>
     </div>

@@ -4,7 +4,7 @@ import toast from "react-hot-toast";
 import { FaFilter, FaSearchengin, FaTimeline } from "react-icons/fa6";
 import { db } from "../services/database";
 
-export const Searchbar = () => {
+export const Searchbar = ({ onSearch }) => {
   const navigate = useNavigate();
   const [modalOpen, setModalOpen] = useState(false);
   const [query, setQuery] = useState("");
@@ -45,12 +45,14 @@ export const Searchbar = () => {
   const handleSubmit = async (event) => {
     event.preventDefault();
     await handleSearch(query);
+    if (onSearch) onSearch(query);
   };
 
   const openAndSearch = async () => {
     openModal();
     if (query.trim()) {
       await handleSearch(query);
+      if (onSearch) onSearch(query);
     }
   };
 
@@ -62,7 +64,7 @@ export const Searchbar = () => {
   return (
     <>
       <div
-        onClick={openModal}
+        onClick={openAndSearch}
         className="w-full flex items-center justify-center gap-2 p-2 outline outline-gray-300 rounded-lg shadow-sm cursor-pointer hover:bg-slate-50"
       >
         <FaSearchengin className="size-7 text-gray-400" />
