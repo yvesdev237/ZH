@@ -40,6 +40,35 @@ const Auth = () => {
 
   const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
+  const normalizePhoneNumber = (value) => {
+    if (typeof value !== "string") return "";
+
+    const cleaned = value.replace(/[^\d+]/g, "").trim();
+    if (!cleaned) return "";
+
+    if (cleaned.startsWith("00")) {
+      return `+${cleaned.slice(2)}`;
+    }
+
+    if (cleaned.startsWith("+")) {
+      return cleaned;
+    }
+
+    if (/^0\d{9}$/.test(cleaned)) {
+      return `+237${cleaned.slice(1)}`;
+    }
+
+    if (/^\d{9}$/.test(cleaned)) {
+      return `+237${cleaned}`;
+    }
+
+    if (/^\d{10,15}$/.test(cleaned)) {
+      return `+${cleaned}`;
+    }
+
+    return cleaned;
+  };
+
   const signIn = async () => {
     if (typeof siEmail !== "string" || !emailRegex.test(siEmail) || !siEmail) {
       toast.error("Invalid Email !");
@@ -84,9 +113,15 @@ const Auth = () => {
     if (suPassword !== suConfirmPassword) {
       toast.error("Passwords are different!");
       return;
-    }if(suRole === "agent" && !suPhone) {
-      toast.error("Please provide your phone number");
-      return;
+    }
+
+    const normalizedPhone = normalizePhoneNumber(suPhone);
+
+    if (suRole === "agent") {
+      if (!normalizedPhone || !/^\+\d{10,15}$/.test(normalizedPhone)) {
+        toast.error("Please provide a valid phone number");
+        return;
+      }
     }
 
     setIsLoading(true);
@@ -97,7 +132,7 @@ const Auth = () => {
         options: {
           data: {
             username: suName.toLowerCase().trim(),
-            phone: suPhone,
+            phone: normalizedPhone,
             role: suRole,
             email: suEmail,
           },

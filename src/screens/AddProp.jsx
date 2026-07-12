@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { toast } from "react-hot-toast";
-import { FaX } from "react-icons/fa6";
+import { FaCamera, FaCheck, FaHouse, FaImage, FaX } from "react-icons/fa6";
 import { db } from "../services/database";
 import { useAuth } from "../context/UseAuth";
 import { Card } from "../components/Cards";
@@ -200,27 +200,32 @@ const AddProp = () => {
   };
 
   return (
-    <main className="min-h-screen w-full bg-white overflow-y-auto pb-20">
-      {/* Sticky Header */}
-      <div className="sticky top-0 z-10 bg-white border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-6 py-6">
-          <h1 className="text-3xl font-bold text-gray-900">Add New Property</h1>
-          <p className="text-gray-600 mt-1">
-            Fill in the details below to list your property
-          </p>
-        </div>
-      </div>
+    <main className="min-h-screen w-full overflow-y-auto bg-[linear-gradient(135deg,_#f8fbff_0%,_#eef6ff_45%,_#fdf2f8_100%)] pb-24 text-slate-800">
+      <div className="mx-auto max-w-7xl px-4 py-5 sm:px-6 lg:px-8 lg:py-8">
+        <div className="rounded-[2rem] border border-white/70 bg-white/80 p-5 shadow-[0_20px_60px_-25px_rgba(15,23,42,0.3)] backdrop-blur sm:p-6 lg:p-8">
+          <div className="flex flex-col gap-4 rounded-[1.5rem] border border-slate-100 bg-slate-50/80 p-5 sm:flex-row sm:items-end sm:justify-between">
+            <div>
+              <p className="text-sm font-semibold uppercase tracking-[0.3em] text-blue-500">
+                New listing
+              </p>
+              <h1 className="mt-2 text-3xl font-semibold tracking-tight text-slate-900">
+                Add a property
+              </h1>
+              <p className="mt-2 max-w-2xl text-sm text-slate-600 sm:text-base">
+                Share your space with a polished listing that’s easy to review
+                and ready to attract interest.
+              </p>
+            </div>
+            <div className="rounded-2xl bg-blue-600 px-4 py-3 text-sm font-semibold text-white shadow-sm">
+              {images.length}/5 photos ready
+            </div>
+          </div>
 
-      {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-6 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Left Column - Image Upload & Preview */}
-          <div className="lg:col-span-1">
-            <div className="sticky top-24 space-y-6">
-              {/* Upload Card */}
+          <div className="mt-6 grid gap-6 lg:grid-cols-[0.95fr_1.05fr]">
+            <div className="space-y-6">
               <div
                 onClick={() => fileInputRef.current?.click()}
-                className="bg-gray-50 rounded-2xl p-8 border-2 border-dashed border-gray-300 hover:border-blue-500 transition-colors cursor-pointer group"
+                className="cursor-pointer rounded-[1.5rem] border border-dashed border-blue-300 bg-gradient-to-br from-blue-50 via-slate-50 to-cyan-50 p-6 transition-all hover:border-blue-500 hover:shadow-md"
               >
                 <input
                   ref={fileInputRef}
@@ -230,21 +235,22 @@ const AddProp = () => {
                   onChange={handleImageChange}
                   className="hidden"
                 />
-                <div className="text-center">
-                  <div className="inline-block p-4 bg-blue-100 rounded-full group-hover:bg-blue-200 transition-colors mb-4">
-                    <p className="text-4xl">📸</p>
+                <div className="flex flex-col items-center justify-center gap-3 text-center">
+                  <div className="rounded-full bg-blue-600 p-4 text-white shadow-lg">
+                    <FaCamera size={24} />
                   </div>
-                  <h3 className="font-semibold text-gray-900 mb-1">
-                    Upload Photo
-                  </h3>
-                  <p className="text-sm text-gray-600">
-                    Drag and drop or click to browse
-                  </p>
+                  <div>
+                    <h2 className="text-lg font-semibold text-slate-900">
+                      Upload your property photos
+                    </h2>
+                    <p className="mt-1 text-sm text-slate-600">
+                      Add up to 5 clear images to show the space beautifully.
+                    </p>
+                  </div>
                 </div>
               </div>
 
-              {/* Property Preview */}
-              <div className="bg-white border border-gray-200 rounded-2xl overflow-hidden shadow-sm p-4">
+              <div className="rounded-[1.5rem] border border-slate-200 bg-white p-4 shadow-sm">
                 <div className="mb-4">
                   <Card
                     imgsrc={previewUrls[selectedImageIndex] || brandPlaceholder}
@@ -261,16 +267,16 @@ const AddProp = () => {
                       role="button"
                       tabIndex={0}
                       onClick={() => setSelectedImageIndex(index)}
-                      className={`relative rounded-lg overflow-hidden border-2 cursor-pointer ${
+                      className={`relative overflow-hidden rounded-xl border-2 transition-all ${
                         selectedImageIndex === index
-                          ? "border-blue-500"
+                          ? "border-blue-500 shadow-md"
                           : "border-transparent"
                       }`}
                     >
                       <img
                         src={url}
                         alt={`Preview ${index + 1}`}
-                        className="w-20 h-20 object-cover"
+                        className="h-20 w-20 object-cover"
                       />
                       <button
                         type="button"
@@ -278,7 +284,7 @@ const AddProp = () => {
                           e.stopPropagation();
                           removeImage(index);
                         }}
-                        className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs"
+                        className="absolute -right-1 -top-1 flex h-6 w-6 items-center justify-center rounded-full bg-red-500 text-xs text-white"
                         aria-label="Remove image"
                       >
                         <FaX />
@@ -286,199 +292,172 @@ const AddProp = () => {
                     </div>
                   ))}
                 </div>
-                <p className="text-xs text-gray-500 mb-3">
-                  Tap a thumbnail to preview it in the card.
-                </p>
 
-                <p className="text-sm text-gray-500">
-                  {images.length} / 5 images selected
-                </p>
-
-                <div className="p-5 space-y-3">
+                <div className="mt-4 grid gap-3 rounded-[1.25rem] bg-slate-50 p-4 text-sm text-slate-600 sm:grid-cols-3">
                   <div>
-                    <p className="text-xs text-gray-500 uppercase tracking-wide">
+                    <p className="text-xs uppercase tracking-[0.2em] text-slate-400">
                       Status
                     </p>
-                    <p className="text-sm font-semibold text-gray-900 capitalize">
+                    <p className="mt-1 font-semibold capitalize text-slate-900">
                       {status}
                     </p>
                   </div>
                   <div>
-                    <p className="text-xs text-gray-500 uppercase tracking-wide">
+                    <p className="text-xs uppercase tracking-[0.2em] text-slate-400">
                       Location
                     </p>
-                    <p className="text-sm font-semibold text-gray-900">
-                      {location}
+                    <p className="mt-1 font-semibold text-slate-900">
+                      {location || "Add a location"}
                     </p>
                   </div>
                   <div>
-                    <p className="text-xs text-gray-500 uppercase tracking-wide">
+                    <p className="text-xs uppercase tracking-[0.2em] text-slate-400">
                       Price
                     </p>
-                    <p className="text-2xl font-bold text-blue-600">
-                      FCFA {price}
-                    </p>
-                    <p className="text-xs text-gray-500">
-                      {status === "rent"
-                        ? `${(price / 12).toFixed(1)} per Month`
-                        : ""}
+                    <p className="mt-1 font-semibold text-blue-600">
+                      {price ? `FCFA ${price}` : "Set a price"}
                     </p>
                   </div>
-                </div>
-              </div>
-
-              {/* Info Boxes */}
-              <div className="space-y-3">
-                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                  <p className="text-sm font-semibold text-gray-900">
-                    ✓ High Quality Images
-                  </p>
-                  <p className="text-xs text-gray-600 mt-1">
-                    Clear, well-lit photos attract more buyers
-                  </p>
-                </div>
-                <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-                  <p className="text-sm font-semibold text-gray-900">
-                    ✓ Detailed Description
-                  </p>
-                  <p className="text-xs text-gray-600 mt-1">
-                    More details = more inquiries
-                  </p>
-                </div>
-                <div className="bg-purple-50 border border-purple-200 rounded-lg p-4">
-                  <p className="text-sm font-semibold text-gray-900">
-                    ✓ Accurate Pricing
-                  </p>
-                  <p className="text-xs text-gray-600 mt-1">
-                    Competitive prices get faster results
-                  </p>
                 </div>
               </div>
             </div>
-          </div>
 
-          {/* Right Column - Form */}
-          <div className="lg:col-span-2">
-            <form
-              className="space-y-6"
-              onSubmit={handleSubmit}
-              onReset={() => {
-                setTitle("");
-                setPrice("");
-                setLocation("");
-                setDescription("");
-                setStatus("");
-                setImages([]);
-                previewUrls.forEach((url) => URL.revokeObjectURL(url));
-                setPreviewUrls([]);
-                setSelectedImageIndex(0);
-                if (fileInputRef.current) fileInputRef.current.value = "";
-              }}
-            >
-              {/* Property Status Toggle */}
-              <div>
-                <label className="block text-sm font-semibold text-gray-900 mb-3">
-                  Property Status *
-                </label>
-                <div className="flex gap-3">
-                  <button
-                    type="button"
-                    onClick={() => setStatus("sale")}
-                    className={` ${status === "sale" ? "bg-blue-400" : "bg-white"} flex-1 px-4 py-3 rounded-lg border border-blue-500  text-blue-700 font-semibold transition-all`}
-                  >
-                    🏷️ For Sale
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setStatus("rent")}
-                    className={` ${status === "rent" ? "bg-blue-400" : "bg-white"} flex-1 px-4 py-3 rounded-lg border-2 border-gray-200  text-gray-700 font-semibold hover:border-gray-300 transition-all`}
-                  >
-                    📅 For Rent
-                  </button>
+            <div>
+              <form
+                className="space-y-5 rounded-[1.5rem] border border-slate-200 bg-white p-4 shadow-sm sm:p-6"
+                onSubmit={handleSubmit}
+                onReset={() => {
+                  setTitle("");
+                  setPrice("");
+                  setLocation("");
+                  setDescription("");
+                  setStatus("sale");
+                  setImages([]);
+                  previewUrls.forEach((url) => URL.revokeObjectURL(url));
+                  setPreviewUrls([]);
+                  setSelectedImageIndex(0);
+                  if (fileInputRef.current) fileInputRef.current.value = "";
+                }}
+              >
+                <div className="rounded-[1.25rem] bg-slate-50 p-4">
+                  <label className="mb-3 block text-sm font-semibold text-slate-900">
+                    Listing type
+                  </label>
+                  <div className="grid gap-3 sm:grid-cols-2">
+                    <button
+                      type="button"
+                      onClick={() => setStatus("sale")}
+                      className={`rounded-2xl border px-4 py-3 text-sm font-semibold transition-all ${
+                        status === "sale"
+                          ? "border-blue-500 bg-blue-600 text-white shadow-sm"
+                          : "border-slate-200 bg-white text-slate-700 hover:border-slate-300"
+                      }`}
+                    >
+                      🏷️ For Sale
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setStatus("rent")}
+                      className={`rounded-2xl border px-4 py-3 text-sm font-semibold transition-all ${
+                        status === "rent"
+                          ? "border-blue-500 bg-blue-600 text-white shadow-sm"
+                          : "border-slate-200 bg-white text-slate-700 hover:border-slate-300"
+                      }`}
+                    >
+                      📅 For Rent
+                    </button>
+                  </div>
                 </div>
-              </div>
 
-              {/* Title */}
-              <div>
-                <label className="block text-sm font-semibold text-gray-900 mb-2">
-                  Property Title *
-                </label>
-                <input
-                  type="text"
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
-                  placeholder="Modern 3-Bedroom Apartment"
-                  className="w-full px-4 py-3 rounded-lg border border-gray-300 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                />
-              </div>
-
-              {/* Location and Price */}
-              <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-semibold text-gray-900 mb-2">
-                    Location *
+                  <label className="mb-2 block text-sm font-semibold text-slate-900">
+                    Property title *
                   </label>
                   <input
                     type="text"
-                    value={location}
-                    onChange={(e) => setLocation(e.target.value)}
-                    placeholder="Downtown, City"
-                    className="w-full px-4 py-3 rounded-lg border border-gray-300 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                    value={title}
+                    onChange={(e) => setTitle(e.target.value)}
+                    placeholder="Modern 3-bedroom apartment"
+                    className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
                   />
                 </div>
-                <div>
-                  <label className="block text-sm font-semibold text-gray-900 mb-2">
-                    Price * (final price)
-                  </label>
-                  <div className="relative gap-3 flex">
-                    <span className="absolute left-4 top-3 text-gray-600 font-semibold">
-                      F
-                    </span>
+
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <div>
+                    <label className="mb-2 block text-sm font-semibold text-slate-900">
+                      Location *
+                    </label>
                     <input
-                      type="number"
-                      value={price}
-                      onChange={(e) => setPrice(e.target.value)}
-                      placeholder="250000"
-                      className="w-full flex-1 pl-8 pr-4 py-3 rounded-lg border border-gray-300 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                      type="text"
+                      value={location}
+                      onChange={(e) => setLocation(e.target.value)}
+                      placeholder="Downtown, City"
+                      className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
                     />
                   </div>
+                  <div>
+                    <label className="mb-2 block text-sm font-semibold text-slate-900">
+                      Price *
+                    </label>
+                    <div className="relative flex">
+                      <span className="absolute left-4 top-3 text-sm font-semibold text-slate-500">
+                        F
+                      </span>
+                      <input
+                        type="number"
+                        value={price}
+                        onChange={(e) => setPrice(e.target.value)}
+                        placeholder="250000"
+                        className="w-full rounded-2xl border border-slate-200 bg-white pl-8 pr-4 py-3 text-sm outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                      />
+                    </div>
+                  </div>
                 </div>
-              </div>
 
-              {/* Description */}
-              <div>
-                <label className="block text-sm font-semibold text-gray-900 mb-2">
-                  Description *
-                </label>
-                <textarea
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                  placeholder="Describe your property in detail including amenities, features, condition..."
-                  className="w-full px-4 py-3 rounded-lg border border-gray-300 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all resize-none"
-                  rows={6}
-                />
-              </div>
+                <div>
+                  <label className="mb-2 block text-sm font-semibold text-slate-900">
+                    Description *
+                  </label>
+                  <textarea
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
+                    placeholder="Describe the space, features, and what makes it special..."
+                    className="min-h-[150px] w-full resize-none rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                  />
+                </div>
 
-              {/* Divider */}
-              <hr className="border-gray-200" />
+                <div className="grid gap-3 rounded-[1.25rem] bg-slate-50 p-4 text-sm text-slate-600 sm:grid-cols-3">
+                  <div className="flex items-center gap-2">
+                    <FaImage className="text-blue-500" />
+                    <span>High quality images</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <FaHouse className="text-blue-500" />
+                    <span>Clear property details</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <FaCheck className="text-blue-500" />
+                    <span>Faster inquiries</span>
+                  </div>
+                </div>
 
-              {/* Action Buttons */}
-              <div className="flex gap-3 pt-4">
-                <button
-                  disabled={uploading}
-                  type="submit"
-                  className="flex-1 bg-blue-600 text-white font-semibold py-3 rounded-lg hover:bg-blue-700 active:scale-95 transition-all shadow-sm"
-                >
-                  {uploading ? "Uploading..." : "Submit Listing"}
-                </button>
-                <button
-                  type="reset"
-                  className="px-6 py-3 bg-gray-100 text-gray-700 font-semibold rounded-lg hover:bg-gray-200 transition-colors"
-                >
-                  Reset
-                </button>
-              </div>
-            </form>
+                <div className="flex flex-col gap-3 pt-2 sm:flex-row">
+                  <button
+                    disabled={uploading}
+                    type="submit"
+                    className="flex-1 rounded-2xl bg-blue-600 px-5 py-3 text-sm font-semibold text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-70"
+                  >
+                    {uploading ? "Uploading..." : "Submit listing"}
+                  </button>
+                  <button
+                    type="reset"
+                    className="rounded-2xl bg-slate-100 px-5 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-200"
+                  >
+                    Reset
+                  </button>
+                </div>
+              </form>
+            </div>
           </div>
         </div>
       </div>

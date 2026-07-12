@@ -1,12 +1,19 @@
 import { NavLink, useLocation } from "react-router-dom";
 import { useAuth } from "../context/UseAuth";
 import { permissionCheck } from "../utils/PermissionCheck";
-import { FaHouse, FaCompass, FaHeart, FaUser } from "react-icons/fa6";
+import {
+  FaBuilding,
+  FaCompass,
+  FaHeart,
+  FaHouse,
+  FaUser,
+} from "react-icons/fa6";
 
 export const Navbar = () => {
   const location = useLocation();
   const { user, role } = useAuth();
   const hideNavbar = location.pathname.startsWith("/dashboard/property/");
+  const isAgent = user?.user_metadata?.role === "agent" || role === "agent";
 
   if (hideNavbar) {
     return null;
@@ -19,6 +26,17 @@ export const Navbar = () => {
       permission: "view_property",
       icon: FaHouse,
     },
+    ...(isAgent
+      ? [
+          {
+            label: "My Property",
+            path: "my-properties",
+            permission: "view_property",
+            icon: FaBuilding,
+            agentOnly: true,
+          },
+        ]
+      : []),
     {
       label: "Explore",
       path: "explore",

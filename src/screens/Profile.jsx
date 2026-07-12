@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import {
   FaDoorOpen,
+  FaEnvelopeOpenText,
   FaFlag,
   FaPagelines,
   FaPaperclip,
@@ -19,6 +20,8 @@ const Profile = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [showAvatarUploader, setShowAvatarUploader] = useState(false);
   const [avatarUrl, setAvatarUrl] = useState(null);
+  const [adminMessages, setAdminMessages] = useState([]);
+  const [messagesLoading, setMessagesLoading] = useState(false);
 
   const navigate = useNavigate();
 
@@ -31,6 +34,40 @@ const Profile = () => {
     };
     loadUserAvatar();
   }, [user?.id]);
+
+  useEffect(() => {
+    const loadAdminMessages = async () => {
+      if (!user?.id) {
+        setAdminMessages([]);
+        return;
+      }
+
+      setMessagesLoading(true);
+      try {
+        const { data, error } = await db
+          .from("notifications")
+          .select("*")
+          .eq("user_id", user.id)
+          .order("created_at", { ascending: false });
+
+        if (error) {
+          console.error("Error loading admin messages:", error);
+          setAdminMessages([]);
+          return;
+        }
+
+        setAdminMessages(data || []);
+      } catch (error) {
+        console.error("Error loading admin messages:", error);
+        setAdminMessages([]);
+      } finally {
+        setMessagesLoading(false);
+      }
+    };
+
+    loadAdminMessages();
+  }, [user?.id]);
+
   const logout = async () => {
     setIsLoading(true);
     try {
@@ -86,47 +123,91 @@ const Profile = () => {
             Not verified
           </span>
         </div>
-        {user.user_metadata?.role === "agent" && (
-          <div className="w-full p-2 flex gap-2">
-            <div className="w-full p-2 bg-gray-200 rounded-lg flex flex-col justify-around items-center">
-              <span>12</span>
-              <p className="text-sm text-gray-500">Listings</p>
-            </div>
-            <div className="w-full p-2 bg-gray-200 rounded-lg flex flex-col justify-around items-center">
-              <span>5</span>
-              <p className="text-sm text-gray-500">Clicks</p>
-            </div>
-            <div className="w-full p-2 bg-gray-200 rounded-lg flex flex-col justify-around items-center">
-              <span>3</span>
-              <p className="text-sm text-gray-500">Enquiries</p>
-            </div>
+      </section>
+      <section className="w-full p-2 flex flex-col justify-center items-start gap-4">
+        <div className="flex items-center gap-2">
+          <FaEnvelopeOpenText className="text-blue-500" />
+          <h2 className="text-xl text-gray-700 font-semibold">
+            Messages from Admins
+          </h2>
+        </div>
+
+        {messagesLoading ? (
+          <p className="text-sm text-gray-500">Loading messages...</p>
+        ) : adminMessages.length > 0 ? (
+          <div className="w-full flex flex-col gap-3">
+            {adminMessages.map((message) => (
+              <div
+                key={message.id}
+                className="w-full rounded-2xl border border-blue-100 bg-blue-50 p-4 shadow-sm"
+              >
+                <div className="flex items-start justify-between gap-3">
+                  <div>
+                    <p className="text-sm font-semibold text-gray-800">
+                      {message.title || "Admin message"}
+                    </p>
+                    <p className="mt-1 text-sm text-gray-600">
+                      {message.message || message.body || "No message content."}
+                    </p>
+                  </div>
+                  <span className="text-[11px] text-gray-500">
+                    {message.created_at
+                      ? new Date(message.created_at).toLocaleDateString()
+                      : "New"}
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="w-full rounded-2xl border border-dashed border-gray-300 bg-gray-50 p-4 text-sm text-gray-500">
+            You don't have any messages from admin yet.
           </div>
         )}
       </section>
+
       <section className="w-full p-2 flex flex-col justify-center items-start gap-4">
         <h2 className="text-xl text-gray-700 font-semibold">Account</h2>
         <div className="w-full flex flex-col justify-center items-start text-lg">
-          <button className="flex items-start gap-4 w-full p-2 " onClick={() => navigate("/dashboard/edit-profile")}>
+          <button
+            className="flex items-start gap-4 w-full p-2 "
+            onClick={() => navigate("/dashboard/edit-profile")}
+          >
             <FaPencil className="text-gray-500" />
             <span className="text-gray-600">Edit Profile</span>
           </button>
-          <button className="flex items-start gap-4 w-full p-2 " onClick={() => navigate("/dashboard/reports")}>
+          <button
+            className="flex items-start gap-4 w-full p-2 "
+            onClick={() => navigate("/dashboard/reports")}
+          >
             <FaFlag className="text-gray-500" />
             <span className="text-gray-600">Reports</span>
           </button>
-          <button className="flex items-start gap-4 w-full p-2 " onClick={() => navigate("/privacy")}>
+          <button
+            className="flex items-start gap-4 w-full p-2 "
+            onClick={() => navigate("/privacy")}
+          >
             <FaPagelines className="text-gray-500" />
             <span className="text-gray-600">Privacy Policy</span>
           </button>
-          <button className="flex items-start gap-4 w-full p-2 " onClick={() => navigate("/terms")}>
+          <button
+            className="flex items-start gap-4 w-full p-2 "
+            onClick={() => navigate("/terms")}
+          >
             <FaPagelines className="text-gray-500" />
             <span className="text-gray-600">Terms of Service</span>
           </button>
-          <button className="flex items-start gap-4 w-full p-2" onClick={() => navigate("/faq")}>
+          <button
+            className="flex items-start gap-4 w-full p-2"
+            onClick={() => navigate("/faq")}
+          >
             <FaPaperclip className="text-gray-500" />
             <span className="text-gray-600">FAQ</span>
           </button>
-          <button className="flex items-start gap-4 w-full p-2" onClick={() => navigate("/dashboard/support")}>
+          <button
+            className="flex items-start gap-4 w-full p-2"
+            onClick={() => navigate("/dashboard/support")}
+          >
             <FaPaperclip className="text-gray-500" />
             <span className="text-gray-600">Support</span>
           </button>

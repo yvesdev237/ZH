@@ -22,6 +22,7 @@ import Support from "./screens/Support";
 import EditProfile from "./screens/EditProfile";
 import { UpdatePass } from "./authPages/UpdatePass";
 import AdminDashboard from "./screens/AdminDashboard";
+import MyProperties from "./screens/MyProperties";
 const App = () => {
   return (
     <main className="w-full min-h-screen flex justify-center">
@@ -51,6 +52,7 @@ const App = () => {
             <Route element={<MyReports />} path="reports" />
             <Route element={<Support />} path="support" />
             <Route element={<EditProfile />} path="edit-profile" />
+            <Route element={<MyProperties />} path="my-properties" />
           </Route>
         </Route>
       </Routes>
