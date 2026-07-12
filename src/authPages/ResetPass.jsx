@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { db } from "../services/database";
 import logo from "../images/zilohomewb.png";
+import toast from 'react-hot-toast'
 
 const ResetPass = () => {
   const [email, setEmail] = useState("");
@@ -9,21 +10,21 @@ const ResetPass = () => {
   const reset = async () => {
     const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
     if (typeof email !== "string" || !emailRegex.test(email) || !email) {
-      alert("Invalid Email !");
+      toast.error("Invalid Email !");
       return;
     }
     setIsLoading(true);
     try {
       const { error } = await db.auth.resetPasswordForEmail({ email });
       if (error) {
-        alert("Failed to reset");
+        toast.error("Failed to reset");
         console.error("reset error :", error);
         return;
       }
-      alert("Reset link sent. Check your inbox.");
+      toast.success("Reset link sent. Check your inbox.");
     } catch (err) {
       console.error(err);
-      alert("Something went wrong. Please try again.");
+      toast.error("Something went wrong. Please try again.");
     } finally {
       setIsLoading(false);
     }

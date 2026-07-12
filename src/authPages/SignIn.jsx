@@ -45,7 +45,7 @@ const SignIn = () => {
     }
   };
   return (
-    <main className="relative h-screen w-full flex flex-col gap-3 items-start p-4 justify-center">
+    <main className="relative h-screen w-full flex flex-col gap-3 items-start p-4 justify-center bg-transparent">
       <h2 className="text-4xl text-blue-500 text-center font-bold font-sans capitalize w-full">
         welcome back !
       </h2>

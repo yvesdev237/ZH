@@ -24,13 +24,21 @@ const EditProfile = () => {
     e.preventDefault();
     setIsSaving(true);
     try {
-      const updates = { username, phone };
+      const updates = {
+        username,
+        phone,
+        email: user?.email || email,
+      };
       const { error: authError } = await db.auth.updateUser({ data: updates });
       if (authError) throw authError;
 
       const { error: profileError } = await db
         .from("profiles")
-        .update(updates)
+        .update({
+          username,
+          phone,
+          email: user?.email || email,
+        })
         .eq("id", user.id);
       if (profileError) throw profileError;
 

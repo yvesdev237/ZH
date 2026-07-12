@@ -14,13 +14,14 @@ import PropertyDetails from "./screens/PropertyDetails";
 import PrivacyPolicy from "./screens/PrivacyPolicy";
 import FAQ from "./screens/FAQ";
 import Terms from "./screens/Terms";
-import { SecureRoute } from "./utils/SecureRouting";
+import { AdminRoute, SecureRoute } from "./utils/SecureRouting";
 import Auth from "./authPages/Auth";
 import Report from "./screens/Report";
 import MyReports from "./screens/MyReports";
 import Support from "./screens/Support";
 import EditProfile from "./screens/EditProfile";
-
+import { UpdatePass } from "./authPages/UpdatePass";
+import AdminDashboard from "./screens/AdminDashboard";
 const App = () => {
   return (
     <main className="w-full min-h-screen flex justify-center">
@@ -30,10 +31,14 @@ const App = () => {
         <Route element={<SignIn />} path="/signin" />
         <Route element={<SignUp />} path="/signup" />
         <Route element={<ResetPass />} path="/reset" />
+        <Route element={<UpdatePass />} path="/update-password" />
         <Route element={<PrivacyPolicy />} path="/privacy" />
         <Route element={<FAQ />} path="/faq" />
         <Route element={<Terms />} path="/terms" />
         <Route element={<AddProp />} path="/add" />
+        <Route element={<AdminRoute />}>
+          <Route element={<AdminDashboard />} path="/admin" />
+        </Route>
         <Route element={<SecureRoute />}>
           <Route element={<Dashboard />} path="/dashboard">
             <Route index element={<Home />} />

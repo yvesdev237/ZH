@@ -6,6 +6,7 @@ export const ContextProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [role, setRole] = useState(null);
+  const [isRecoverySession, setIsRecoverySession] = useState(false);
   const favoriteKey = "zilo_favorites";
   const [favorites, setFavorites] = useState(() => {
     if (typeof window === "undefined") return [];
@@ -53,9 +54,11 @@ export const ContextProvider = ({ children }) => {
       if (data.session?.user) {
         setUser(data.session.user ?? null);
         setRole(data.session.user?.user_metadata.role ?? null);
+        setIsRecoverySession(false);
       } else {
         setUser(null);
         setRole(null);
+        setIsRecoverySession(false);
       }
     } catch (error) {
       console.error("Error refreshing session:", error);
@@ -70,6 +73,7 @@ export const ContextProvider = ({ children }) => {
         if (data.session?.user) {
           setUser(data.session.user ?? null);
           setRole(data.session.user?.user_metadata.role ?? null);
+          setIsRecoverySession(false);
           console.log(
             "User role on get session:",
             data.session.user?.user_metadata.role,
@@ -77,6 +81,7 @@ export const ContextProvider = ({ children }) => {
           console.log("User session found:", data.session.user);
         } else {
           setUser(null);
+          setIsRecoverySession(false);
           console.log("No user session found");
         }
       } catch (error) {
@@ -92,9 +97,13 @@ export const ContextProvider = ({ children }) => {
       (event, session) => {
         try {
           const newSession = session?.user;
+          const isPasswordRecovery = event === "PASSWORD_RECOVERY";
+
           setUser(newSession ?? null);
           setRole(newSession?.user_metadata.role ?? null);
-          console.log("Auth state changed:", newSession);
+          setIsRecoverySession(isPasswordRecovery && Boolean(session));
+
+          console.log("Auth state changed:", event, newSession);
           console.log(
             "User role on authchange session:",
             newSession?.user_metadata.role,
@@ -118,6 +127,7 @@ export const ContextProvider = ({ children }) => {
         favorites,
         toggleFavorite,
         isFavorite,
+        isRecoverySession,
       }}
     >
       {children}

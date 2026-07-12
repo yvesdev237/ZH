@@ -5,9 +5,10 @@ import { Link, Navigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import { useAuth } from "../context/UseAuth";
 import logo from "../images/zilohomewb.png";
+import { promoteUserToAdmin } from "../services/adminService";
 
 const Auth = () => {
-  const { user } = useAuth();
+  const { user, role } = useAuth();
   const [mode, setMode] = useState("signin");
 
   // shared states
@@ -28,8 +29,13 @@ const Auth = () => {
   const [suShow, setSuShow] = useState(false);
   const [suShowConfirm, setSuShowConfirm] = useState(false);
 
-  if (user && user.user_metadata?.role) {
-    return <Navigate to="/dashboard/home" replace={true} />;
+  if (user && user?.user_metadata?.role) {
+    return (
+      <Navigate
+        to={role === "admin" ? "/admin" : "/dashboard/home"}
+        replace={true}
+      />
+    );
   }
 
   const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
@@ -78,6 +84,9 @@ const Auth = () => {
     if (suPassword !== suConfirmPassword) {
       toast.error("Passwords are different!");
       return;
+    }if(suRole === "agent" && !suPhone) {
+      toast.error("Please provide your phone number");
+      return;
     }
 
     setIsLoading(true);
@@ -90,6 +99,7 @@ const Auth = () => {
             username: suName.toLowerCase().trim(),
             phone: suPhone,
             role: suRole,
+            email: suEmail,
           },
         },
       });
@@ -114,8 +124,8 @@ const Auth = () => {
     <div className="relative min-h-screen w-screen overflow-hidden text-slate-100">
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(59,130,246,0.22),transparent_36%),radial-gradient(circle_at_bottom_right,rgba(59,130,246,0.18),transparent_28%)]" />
       <div className="absolute inset-0 bg-[url('/src/assets/hero.png')] bg-cover bg-center opacity-20" />
-      <div className="relative mx-auto flex min-h-screen w-full max-w-7xl items-center justify-center px-4 py-10 sm:px-6 lg:px-8">
-        <div className="relative w-full overflow-hidden rounded-4xl border border-white/10 bg-slate-950/80 shadow-2xl shadow-slate-950/30 backdrop-blur-xl lg:flex lg:gap-8">
+      <div className="relative mx-auto flex min-h-screen w-full max-w-7xl items-center justify-center lg:py-10 sm:px-6 lg:px-8">
+        <div className="relative w-full overflow-hidden lg:rounded-4xl border border-white/10 bg-slate-950/80 shadow-2xl shadow-slate-950/30 backdrop-blur-xl lg:flex lg:gap-8">
           <aside className="hidden w-1/2 flex-col justify-between bg-slate-900/80 p-8 text-white lg:flex">
             <div className="space-y-6">
               <div className="inline-flex items-center gap-3 rounded-full bg-white/10 px-4 py-2 text-sm font-semibold text-cyan-200 shadow-sm shadow-cyan-500/10">
@@ -361,7 +371,7 @@ const Auth = () => {
 
                   <div className="grid gap-2 rounded-3xl bg-slate-950/95 p-4 text-sm text-slate-300 shadow-inner shadow-slate-950/20">
                     <p className="font-semibold text-slate-100">I am</p>
-                    <div className="grid grid-cols-2 gap-3">
+                    <div className="grid grid-cols-3 gap-3">
                       <button
                         onClick={() => setSuRole("tenant")}
                         className={`rounded-2xl px-4 py-3 text-sm font-semibold transition ${suRole === "tenant" ? "bg-cyan-400 text-slate-950" : "bg-slate-900 text-slate-300 hover:bg-slate-800"}`}
@@ -375,6 +385,10 @@ const Auth = () => {
                         Agent
                       </button>
                     </div>
+                    <p className="text-xs text-slate-400">
+                      Choose Admin only when creating the first administrator
+                      account.
+                    </p>
                   </div>
 
                   <button

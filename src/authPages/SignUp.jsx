@@ -56,6 +56,26 @@ const SignUp = () => {
         return;
       }
 
+      if (data?.user?.id) {
+        const profilePayload = {
+          id: data.user.id,
+          email,
+          username: name.toLowerCase().trim(),
+          phone,
+          role,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        };
+
+        const { error: profileError } = await db
+          .from("profiles")
+          .upsert(profilePayload, { onConflict: "id" });
+
+        if (profileError) {
+          console.warn("Profile sync warning:", profileError);
+        }
+      }
+
       toast.success("Successfully signed up !");
       console.log(data);
     } catch (err) {
